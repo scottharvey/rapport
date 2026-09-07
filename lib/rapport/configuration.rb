@@ -1,5 +1,6 @@
 module Rapport
-  # Defaults match the Launchpad shell so the host initializer can stay empty.
+  # Defaults match a conventional Rails SaaS shell (User, Account, Pay, Ahoy, plus the
+  # ideasbugs, livechat and testimonials engines) so a host initializer can stay small.
   class Configuration
     HOST_CLASSES = %i[
       user_class account_class subscription_class charge_class
