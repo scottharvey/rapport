@@ -4,9 +4,18 @@
   </div>
   <div class="min-w-0 flex-1">
     <div class="flex flex-wrap items-baseline gap-x-2">
-      <span class="font-medium text-sm"><%= entry.title %></span>
+      <% if link %>
+        <%= link_to link, class: "font-medium text-sm link link-hover", target: (external_link? ? "_blank" : nil), rel: (external_link? ? "noopener" : nil) do %>
+          <%= entry.title %><% if external_link? %><span class="opacity-50 text-xs ml-0.5">↗</span><% end %>
+        <% end %>
+      <% else %>
+        <span class="font-medium text-sm"><%= entry.title %></span>
+      <% end %>
       <% if show_kind? %><span class="text-xs opacity-50"><%= kind_label %></span><% end %>
       <time class="text-xs opacity-50 ml-auto" datetime="<%= entry.occurred_at.iso8601 %>"><%= timestamp %></time>
+      <% if removable? %>
+        <%= button_to "×", remove_path, method: :delete, class: "text-xs opacity-30 hover:opacity-100 hover:text-error leading-none", form: { class: "inline", data: { turbo_confirm: "Remove this #{entry.title.downcase} from the timeline?" } }, "aria-label": "Remove #{entry.title}" %>
+      <% end %>
     </div>
     <% if detail.present? %>
       <p class="text-sm opacity-70 whitespace-pre-line break-words"><%= detail %></p>

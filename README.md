@@ -33,3 +33,7 @@ Rapport never adds callbacks to host models and holds host ids as plain integers
 ## Tests
 
 Live in the host suite under `test/rapport/`. They exercise the Sweep, the mail observer, engine access and the three write actions (merge, touch, sync).
+
+## Links out of the Timeline
+
+`config.entry_links` maps an entry kind to a lambda returning a URL: charges and subscriptions open the Stripe dashboard (test mode detected from the API key), emails open the Resend log, and chat, feedback, testimonial and NPS entries open the host's own engines. `config.user_link` decides where "user #n" points, by default the Avo user record. Return nil to show plain text.

@@ -26,9 +26,9 @@ module Rapport
     end
 
     def create
-      @contact = Contact.new(contact_params.except(:email))
+      @contact = Contact.new(contact_params.except(:address))
       @contact.source = "operator"
-      @contact.email_addresses.build(address: contact_params[:email], primary: true)
+      @contact.email_addresses.build(address: contact_params[:address], primary: true)
       if @contact.save
         redirect_to @contact, notice: "Contact created."
       else
@@ -61,7 +61,7 @@ module Rapport
     end
 
     def merge
-      other = params[:other_email].present? ? Contact.find_by_email(params[:other_email]) : Contact.find_by(id: params[:other_id])
+      other = params[:other].present? ? Contact.find_by_email(params[:other]) : Contact.find_by(id: params[:other_id])
       if other.nil? || other == @contact
         redirect_to @contact, alert: "Pick a different contact to merge."
       else
@@ -77,7 +77,7 @@ module Rapport
     end
 
     def contact_params
-      params.require(:contact).permit(:name, :job_title, :phone, :avatar_url, :company_id, :manual_stage, :email)
+      params.require(:contact).permit(:name, :job_title, :phone, :avatar_url, :company_id, :manual_stage, :address)
     end
   end
 end

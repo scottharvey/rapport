@@ -15,7 +15,7 @@ module Rapport
         [ "touched", "Marked as touched", {} ],
         [ "email", "Email: Welcome to Rails Pulse", { "mailer" => "UserMailer" } ],
         [ "chat", "Livechat (open)", { "preview" => "Do you support Rails 8?", "page_url" => "https://example.com/pricing" } ],
-        [ "charge", "Paid $49.00", { "amount" => 4900, "currency" => "usd" } ],
+        [ "charge", "Paid $49.00", { "amount" => 4900, "currency" => "usd", "processor_id" => "ch_preview" } ],
         [ "subscription", "Subscription trialing: Rails Pulse Pro", { "plan" => "price_pro", "trial_ends_at" => (now + 14.days).iso8601 } ],
         [ "subscription_ended", "Subscription ended: Rails Pulse Pro", {} ],
         [ "event", "Registered", {} ],

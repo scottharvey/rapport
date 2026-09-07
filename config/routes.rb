@@ -7,6 +7,7 @@ Rapport::Engine.routes.draw do
       post :merge
     end
     resources :entries, only: :create
+    resources :timeline_entries, only: :destroy
     resources :notes, only: :create
     resources :interactions, only: :create
     resources :taggings, only: %i[create destroy]

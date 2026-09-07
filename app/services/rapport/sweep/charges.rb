@@ -12,7 +12,7 @@ module Rapport
             title = "Paid #{money(charge.amount, charge.currency)}"
             title += " (refunded #{money(refunded, charge.currency)})" if refunded.positive?
             record(contact, kind: "charge", occurred_at: charge.created_at, title: title,
-                            payload: { amount: charge.amount, amount_refunded: refunded, currency: charge.currency },
+                            payload: { amount: charge.amount, amount_refunded: refunded, currency: charge.currency, processor_id: charge.processor_id },
                             source: charge)
           end
         end

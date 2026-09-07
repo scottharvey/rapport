@@ -47,5 +47,21 @@ module Rapport
     def timestamp
       entry.occurred_at.strftime("%-d %b %Y %H:%M")
     end
+
+    def link
+      @link ||= Rapport.configuration.link_for(entry)
+    end
+
+    def external_link?
+      link.to_s.start_with?("http")
+    end
+
+    def removable?
+      entry.persisted? && entry.deletable?
+    end
+
+    def remove_path
+      Rapport::Engine.routes.url_helpers.contact_timeline_entry_path(entry.contact_id, entry)
+    end
   end
 end

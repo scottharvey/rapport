@@ -6,7 +6,15 @@ module Rapport
 
     validates :kind, :occurred_at, :title, :source_type, :source_id, presence: true
 
+    OPERATOR_KINDS = %w[note interaction touched].freeze
+
     scope :newest_first, -> { order(occurred_at: :desc, id: :desc) }
+
+    # Only what the operator wrote can be removed; Source entries come back
+    # on the next Sweep anyway.
+    def deletable?
+      OPERATOR_KINDS.include?(kind)
+    end
 
     # Idempotent write. `source` may be a record or a [type, id] pair.
     # `pin_time` keeps the time an existing entry was first seen at, for

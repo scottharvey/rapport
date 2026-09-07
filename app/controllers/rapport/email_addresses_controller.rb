@@ -3,7 +3,7 @@ module Rapport
     before_action :set_contact
 
     def create
-      address = params[:address].to_s
+      address = params[:new_address].to_s
       if Contact.find_by_email(address)
         redirect_to @contact, alert: "That address already belongs to a @contact."
       elsif @contact.add_email(address, primary: params[:primary].present?)

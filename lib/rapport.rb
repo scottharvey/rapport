@@ -1,4 +1,5 @@
 require "rapport/version"
+require "rapport/entry_links"
 require "rapport/configuration"
 require "rapport/engine"
 

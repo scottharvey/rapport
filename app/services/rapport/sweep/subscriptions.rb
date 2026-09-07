@@ -33,6 +33,7 @@ module Rapport
 
       def payload_for(subscription)
         {
+          processor_id: subscription.processor_id,
           status: subscription.status,
           plan: subscription.processor_plan,
           name: subscription.name,

@@ -2,7 +2,7 @@
   <%= render Ui::FormErrorsComponent.new(model: contact) %>
   <fieldset class="fieldset"><%= f.label :name, class: "label" %><%= f.text_field :name, class: "input w-full", **plain_field %></fieldset>
   <% if contact.new_record? %>
-    <fieldset class="fieldset"><%= f.label :email, class: "label" %><%= f.email_field :email, class: "input w-full", required: true, **plain_field %></fieldset>
+    <fieldset class="fieldset"><%= f.label :address, "Email", class: "label" %><%= f.text_field :address, class: "input w-full", required: true, **plain_field %></fieldset>
   <% end %>
   <fieldset class="fieldset"><%= f.label :job_title, class: "label" %><%= f.text_field :job_title, class: "input w-full", **plain_field %></fieldset>
   <fieldset class="fieldset"><%= f.label :phone, class: "label" %><%= f.telephone_field :phone, class: "input w-full", **plain_field %></fieldset>

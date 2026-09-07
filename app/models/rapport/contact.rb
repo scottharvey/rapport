@@ -84,5 +84,10 @@ module Rapport
     def refresh_last_entry!
       update_column(:last_entry_at, timeline_entries.maximum(:occurred_at))
     end
+
+    # Recomputes the last Touch from what remains after an entry is removed.
+    def recompute_last_touch!
+      update_column(:last_touched_at, timeline_entries.where(kind: %w[interaction touched]).maximum(:occurred_at))
+    end
   end
 end

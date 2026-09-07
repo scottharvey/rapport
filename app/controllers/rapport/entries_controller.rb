@@ -18,7 +18,7 @@ module Rapport
     private
 
     def entry_params
-      params.require(:entry).permit(:kind, :body, :occurred_at, :other_emails)
+      params.require(:entry).permit(:kind, :body, :occurred_at, :participants)
     end
 
     def create_note
@@ -33,7 +33,7 @@ module Rapport
 
     def create_interaction(kind)
       interaction = Interaction.new(kind: kind, body: entry_params[:body], occurred_at: entry_params[:occurred_at].presence || Time.current)
-      others = entry_params[:other_emails].to_s.split(/[,;\s]+/).filter_map { |address| Contact.find_by_email(address) }.uniq - [ @contact ]
+      others = entry_params[:participants].to_s.split(/[,;\s]+/).filter_map { |address| Contact.find_by_email(address) }.uniq - [ @contact ]
       if interaction.valid?
         interaction.record!([ @contact, *others ])
         ([ @contact ] + others).each(&:refresh_last_entry!)

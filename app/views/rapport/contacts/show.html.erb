@@ -20,7 +20,10 @@
       <div class="flex items-center gap-2 mt-1.5 text-xs text-base-content/60">
         <%= stage_badge(@contact.stage) %>
         <span>via <%= @contact.source %></span>
-        <% if @contact.user_id %><span>· user #<%= @contact.user_id %></span><% end %>
+        <% if @contact.user_id %>
+          <% user_url = Rapport.configuration.user_link&.call(@contact) %>
+          <span>· <%= user_url ? link_to("user ##{@contact.user_id}", user_url, class: "link link-hover") : "user ##{@contact.user_id}" %></span>
+        <% end %>
         <% if @contact.phone.present? %><span>· <%= @contact.phone %></span><% end %>
       </div>
     </div>
@@ -44,7 +47,7 @@
         <%= f.text_area :body, rows: 3, placeholder: "Write a note, or what was said on the call…", class: "textarea w-full", required: true, **plain_field %>
         <div class="flex flex-wrap items-center gap-2">
           <%= f.datetime_local_field :occurred_at, value: Time.current.strftime("%Y-%m-%dT%H:%M"), class: "input input-sm w-52", title: "When it happened (interactions only)", **plain_field %>
-          <%= f.text_field :other_emails, list: "rapport-addresses", placeholder: "Also with… (emails, comma separated)", class: "input input-sm flex-1 min-w-48", **plain_field %>
+          <%= f.text_field :participants, list: "rapport-addresses", placeholder: "Also with… (addresses, comma separated)", class: "input input-sm flex-1 min-w-48", **plain_field %>
           <datalist id="rapport-addresses"><% @address_options.each do |name, address| %><option value="<%= address %>"><%= name %></option><% end %></datalist>
           <%= f.submit "Add to timeline", class: "btn btn-sm btn-primary" %>
         </div>
@@ -96,7 +99,7 @@
         <% end %>
       </ul>
       <%= form_with url: contact_email_addresses_path(@contact), method: :post, class: "join" do |f| %>
-        <%= f.email_field :address, placeholder: "Add address", class: "input input-sm join-item flex-1 min-w-0", required: true, **plain_field %>
+        <%= f.text_field :new_address, placeholder: "Add address", class: "input input-sm join-item flex-1 min-w-0", required: true, **plain_field %>
         <%= f.submit "Add", class: "btn btn-sm join-item" %>
       <% end %>
     <% end %>
@@ -142,7 +145,7 @@
     <%= render Ui::DisclosureComponent.new(title: "Merge or delete") do %>
       <p class="text-xs text-base-content/60 mb-2">Fold another contact into this one. This contact survives.</p>
       <%= form_with url: merge_contact_path(@contact), method: :post, class: "join w-full" do |f| %>
-        <%= f.email_field :other_email, list: "rapport-addresses", placeholder: "Other contact's email", class: "input input-sm join-item flex-1 min-w-0", required: true, **plain_field %>
+        <%= f.text_field :other, list: "rapport-addresses", placeholder: "Other contact's address", class: "input input-sm join-item flex-1 min-w-0", required: true, **plain_field %>
         <%= f.submit "Merge", class: "btn btn-sm btn-warning join-item", data: { turbo_confirm: "Merge into #{@contact.display_name}? This cannot be undone." } %>
       <% end %>
       <div class="mt-4">
