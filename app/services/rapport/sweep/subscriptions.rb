@@ -11,7 +11,7 @@ module Rapport
             # One row per status the Sweep has seen, dated when it was first seen.
             record(contact, kind: "subscription", occurred_at: status_seen_at(subscription),
                             title: "Subscription #{subscription.status.to_s.humanize.downcase}: #{subscription.name}",
-                            payload: payload_for(subscription),
+                            payload: payload_for(subscription), pin_time: true,
                             source: [ TimelineEntry.source_type_for(subscription), "#{subscription.id}:#{subscription.status}" ])
 
             if subscription.ends_at.present?

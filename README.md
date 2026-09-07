@@ -20,6 +20,7 @@ Rapport never adds callbacks to host models and holds host ids as plain integers
 - `authenticate`: a block run in the controller; the default redirects anyone who is not a signed-in admin
 - `skip_host_before_actions`: host guards to skip, since they redirect with host route helpers
 - `*_class`: the host class name for each Source; a name that does not resolve is skipped
+- `skip_user`: Users left out of the Sweep; by default, admins, since operators are not Contacts
 
 ## Layout
 

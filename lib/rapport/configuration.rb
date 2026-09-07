@@ -6,7 +6,7 @@ module Rapport
       ahoy_event_class livechat_conversation_class testimonial_class nps_response_class feedback_class
     ].freeze
 
-    attr_accessor :mount_path, :parent_controller, :layout, :authenticate, :skip_host_before_actions, *HOST_CLASSES
+    attr_accessor :mount_path, :parent_controller, :layout, :authenticate, :skip_host_before_actions, :skip_user, *HOST_CLASSES
 
     def initialize
       @mount_path = "/rapport"
@@ -22,6 +22,8 @@ module Rapport
       @testimonial_class = "Testimonials::Testimonial"
       @nps_response_class = "Testimonials::NpsResponse"
       @feedback_class = "Ideasbugs::Feedback"
+      # Operators are not Contacts. Admin Users are left out of the Sweep.
+      @skip_user = ->(user) { user.respond_to?(:admin?) && user.admin? }
       # Runs in the controller. Redirects anyone who is not a signed-in admin.
       @authenticate = lambda do
         resume_session if respond_to?(:resume_session, true)

@@ -9,9 +9,12 @@ module Rapport
     scope :newest_first, -> { order(occurred_at: :desc, id: :desc) }
 
     # Idempotent write. `source` may be a record or a [type, id] pair.
-    def self.record!(contact:, kind:, occurred_at:, title:, source:, payload: {}, status: nil)
+    # `pin_time` keeps the time an existing entry was first seen at, for
+    # sources whose timestamps drift on every host update.
+    def self.record!(contact:, kind:, occurred_at:, title:, source:, payload: {}, status: nil, pin_time: false)
       source_type, source_id = source.is_a?(Array) ? source : [ source_type_for(source), source.id ]
       entry = find_or_initialize_by(contact:, source_type:, source_id: source_id.to_s)
+      occurred_at = entry.occurred_at if pin_time && entry.persisted?
       entry.assign_attributes(kind:, occurred_at:, title: title.to_s.truncate(255), payload:, status: status || entry.status)
       entry.save! if entry.new_record? || entry.changed?
       entry

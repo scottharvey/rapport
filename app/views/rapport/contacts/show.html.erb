@@ -44,9 +44,9 @@
     <%= render Ui::CardComponent.new(body_classes: "!p-4 gap-3") do %>
       <h2 class="font-semibold">Reminder</h2>
       <p class="text-sm">
-        <% if @contact.reminder_cadence_days %>
-          Every <%= @contact.reminder_cadence_days %> days.
-          <span class="<%= 'text-warning font-medium' if @contact.due? %>"><%= @contact.due? ? "Due now." : "Not due." %></span>
+        <% if (label, cadence, attention = touch_status(@contact)) %>
+          <span class="<%= 'text-warning font-medium' if attention %>"><%= label %></span>
+          <span class="opacity-60">· <%= cadence %></span>
         <% else %>
           <span class="opacity-60">No reminder set.</span>
         <% end %>

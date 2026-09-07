@@ -37,9 +37,9 @@
           <tbody>
             <% @contacts.each do |contact| %>
               <tr>
-                <td><%= link_to contact.display_name, contact_path(contact), class: "link link-hover font-medium" %><div class="text-xs opacity-60"><%= contact.primary_email %></div></td>
+                <td><%= link_to contact.display_name, contact_path(contact), class: "link link-hover font-medium" %><% if contact.name.present? %><div class="text-xs opacity-60"><%= contact.primary_email %></div><% end %></td>
                 <td><%= stage_badge(contact.stage) %></td>
-                <td><%= rapport_time(contact.last_entry_at) %></td>
+                <td class="whitespace-nowrap"><%= rapport_ago(contact.last_entry_at) %></td>
               </tr>
             <% end %>
           </tbody>

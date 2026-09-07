@@ -70,6 +70,13 @@ module Rapport
       last_touched_at.nil? || last_touched_at < reminder_cadence_days.days.ago
     end
 
+    # When the next Touch falls due; nil without a Reminder or a first Touch.
+    def due_at
+      return nil if reminder_cadence_days.nil? || last_touched_at.nil?
+
+      last_touched_at + reminder_cadence_days.days
+    end
+
     def touch!(at: Time.current)
       update!(last_touched_at: [ last_touched_at, at ].compact.max)
     end
