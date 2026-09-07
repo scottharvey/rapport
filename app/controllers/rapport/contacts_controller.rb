@@ -77,7 +77,7 @@ module Rapport
     end
 
     def contact_params
-      params.require(:contact).permit(:name, :job_title, :phone, :avatar_url, :company_id, :manual_stage, :address)
+      params.require(:contact).permit(:label, :job_title, :phone, :avatar_url, :company_id, :manual_stage, :address)
     end
   end
 end

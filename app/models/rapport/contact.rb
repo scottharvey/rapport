@@ -3,6 +3,9 @@ module Rapport
     STAGES = %w[lead signed_up trialing subscribed churned].freeze
 
     belongs_to :company, optional: true
+
+    # See Company#label.
+    alias_attribute :label, :name
     has_many :email_addresses, dependent: :destroy
     has_many :taggings, dependent: :destroy
     has_many :tags, through: :taggings

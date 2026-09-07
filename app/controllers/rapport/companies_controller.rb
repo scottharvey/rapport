@@ -47,7 +47,7 @@ module Rapport
     end
 
     def company_params
-      params.require(:company).permit(:name, :domain)
+      params.require(:company).permit(:label, :domain)
     end
   end
 end

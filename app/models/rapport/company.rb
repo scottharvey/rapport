@@ -2,6 +2,10 @@ module Rapport
   class Company < ApplicationRecord
     has_many :contacts, dependent: :nullify
 
+    # Forms post the name as `label`: password managers treat any input
+    # called "name" as a form-fill target, whatever attributes it carries.
+    alias_attribute :label, :name
+
     normalizes :domain, with: ->(d) { d.to_s.strip.downcase.delete_prefix("@").presence }
 
     validates :name, presence: true
