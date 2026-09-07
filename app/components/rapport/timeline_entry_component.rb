@@ -10,6 +10,11 @@ module Rapport
     }.freeze
 
     KIND_LABELS = { "nps" => "NPS", "chat" => "Livechat", "event" => "Event" }.freeze
+    # What the "open" button says, per kind. Anything else names the host.
+    LINK_LABELS = {
+      "charge" => "Stripe", "subscription" => "Stripe", "subscription_ended" => "Stripe", "email" => "Resend",
+      "chat" => "Livechat", "feedback" => "Feedback", "testimonial" => "Testimonials", "nps" => "Testimonials"
+    }.freeze
 
     def initialize(entry:)
       @entry = entry
@@ -54,6 +59,14 @@ module Rapport
 
     def external_link?
       link.to_s.start_with?("http")
+    end
+
+    def link_label
+      LINK_LABELS.fetch(entry.kind) { external_link? ? URI(link).host.to_s.delete_prefix("www.") : "Open" }
+    end
+
+    def link_attributes
+      external_link? ? { target: "_blank", rel: "noopener" } : {}
     end
 
     def removable?
