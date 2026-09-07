@@ -18,8 +18,9 @@ module Rapport
       @note = Note.new
       @interaction = Interaction.new(occurred_at: Time.current)
       @tag_names = Tag.order(:name).pluck(:name)
-      @merge_candidates = EmailAddress.where.not(contact_id: @contact.id).includes(:contact).order(:address).limit(1000)
-                                      .map { |email| [ email.contact.display_name, email.address ] }
+      # [name, address] pairs for the merge and "also with" autocompletes.
+      @address_options = EmailAddress.where.not(contact_id: @contact.id).includes(:contact).order(:address).limit(1000)
+                                     .map { |email| [ email.contact.display_name, email.address ] }
     end
 
     def new

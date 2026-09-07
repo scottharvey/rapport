@@ -29,10 +29,15 @@ module Rapport
       if contact.last_touched_at.nil?
         [ "Never touched", cadence, true ]
       elsif contact.due?
-        [ "Overdue by #{distance_of_time_in_words(contact.due_at, Time.current)}", cadence, true ]
+        [ "Overdue by #{days_between(contact.due_at, Time.current)}", cadence, true ]
       else
-        [ "Due in #{distance_of_time_in_words(Time.current, contact.due_at)}", cadence, false ]
+        [ "Due in #{days_between(Time.current, contact.due_at)}", cadence, false ]
       end
+    end
+
+    def days_between(from, to)
+      days = ((to - from) / 1.day).ceil
+      days < 1 ? "less than a day" : "#{days} #{'day'.pluralize(days)}"
     end
   end
 end

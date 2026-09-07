@@ -6,7 +6,7 @@ module Rapport
 
         events.where.not(user_id: nil).where.not("name LIKE '$%'").find_each do |event|
           contact = Contact.find_by(user_id: event.user_id) or next
-          record(contact, kind: "event", occurred_at: event.time || event.created_at, title: event.name.to_s,
+          record(contact, kind: "event", occurred_at: event.time || event.created_at, title: event.name.to_s.humanize,
                           payload: { properties: event.properties || {} }, source: event)
         end
       end

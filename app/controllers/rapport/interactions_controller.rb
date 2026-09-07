@@ -5,7 +5,7 @@ module Rapport
     def create
       interaction = Interaction.new(params.require(:interaction).permit(:kind, :occurred_at, :body))
       interaction.occurred_at ||= Time.current
-      others = Contact.where(id: Array(params.dig(:interaction, :other_contact_ids)).reject(&:blank?))
+      others = params.dig(:interaction, :other_emails).to_s.split(/[,;\s]+/).filter_map { |address| Contact.find_by_email(address) }.uniq
 
       if interaction.valid?
         interaction.record!([ @contact, *others ])

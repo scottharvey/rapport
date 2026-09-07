@@ -5,7 +5,7 @@
   <div class="min-w-0 flex-1">
     <div class="flex flex-wrap items-baseline gap-x-2">
       <span class="font-medium text-sm"><%= entry.title %></span>
-      <span class="text-xs opacity-50"><%= entry.kind.humanize %></span>
+      <% if show_kind? %><span class="text-xs opacity-50"><%= kind_label %></span><% end %>
       <time class="text-xs opacity-50 ml-auto" datetime="<%= entry.occurred_at.iso8601 %>"><%= timestamp %></time>
     </div>
     <% if detail.present? %>

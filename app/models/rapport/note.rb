@@ -9,7 +9,7 @@ module Rapport
     private
 
     def record_on_timeline
-      TimelineEntry.record!(contact:, kind: "note", occurred_at: created_at, title: body.truncate(80),
+      TimelineEntry.record!(contact:, kind: "note", occurred_at: created_at, title: "Note",
                             payload: { body: body }, source: self)
     end
   end

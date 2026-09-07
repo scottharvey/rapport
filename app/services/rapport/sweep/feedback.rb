@@ -8,7 +8,7 @@ module Rapport
         feedbacks.find_each do |feedback|
           contact = contact_for(feedback) or next
           record(contact, kind: "feedback", occurred_at: feedback.created_at,
-                          title: "Feedback (#{feedback.kind}): #{feedback.message.to_s.truncate(80)}",
+                          title: "Feedback (#{feedback.kind})",
                           payload: { kind: feedback.kind, status: feedback.status, message: feedback.message, page_url: feedback.page_url },
                           source: feedback)
         end

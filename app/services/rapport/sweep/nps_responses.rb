@@ -7,7 +7,7 @@ module Rapport
         responses.where.not(email: [ nil, "" ]).find_each do |response|
           contact = contact_for_email(response.email, source: "testimonial", name: response.name) or next
           record(contact, kind: "nps", occurred_at: response.created_at,
-                          title: "NPS #{response.score}#{": #{response.comment.to_s.truncate(80)}" if response.comment.present?}",
+                          title: "NPS #{response.score}",
                           payload: { score: response.score, comment: response.comment },
                           source: response)
         end

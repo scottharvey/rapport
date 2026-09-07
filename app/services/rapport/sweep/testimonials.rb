@@ -7,7 +7,7 @@ module Rapport
         testimonials.where.not(email: [ nil, "" ]).find_each do |testimonial|
           contact = contact_for_email(testimonial.email, source: "testimonial", name: testimonial.name) or next
           record(contact, kind: "testimonial", occurred_at: testimonial.created_at,
-                          title: "Testimonial (#{testimonial.status}): #{testimonial.body.to_s.truncate(80)}",
+                          title: "Testimonial (#{testimonial.status})",
                           payload: { status: testimonial.status, rating: testimonial.rating, body: testimonial.body },
                           source: testimonial)
         end

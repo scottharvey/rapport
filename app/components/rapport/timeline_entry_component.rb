@@ -9,6 +9,8 @@ module Rapport
       "testimonial" => "star", "nps" => "star", "feedback" => "exclamation-triangle", "user_deleted" => "trash"
     }.freeze
 
+    KIND_LABELS = { "nps" => "NPS", "chat" => "Livechat", "event" => "Event" }.freeze
+
     def initialize(entry:)
       @entry = entry
     end
@@ -26,10 +28,20 @@ module Rapport
       case entry.kind
       when "note", "interaction" then payload["body"]
       when "email" then [ payload["mailer"], entry.status ].compact.join(" · ")
-      when "chat", "feedback" then payload["page_url"]
+      when "chat" then payload["preview"]
+      when "feedback" then payload["message"]
       when "testimonial", "nps" then payload["comment"] || payload["body"]
-      when "subscription" then [ payload["plan"], payload["trial_ends_at"] && "trial ends #{payload['trial_ends_at'].to_s.first(10)}" ].compact.join(" · ")
+      when "subscription" then payload["trial_ends_at"] && "Trial ends #{payload['trial_ends_at'].to_s.first(10)}"
       end
+    end
+
+    # Operator entries already name themselves in the title.
+    def show_kind?
+      !%w[note interaction touched].include?(entry.kind)
+    end
+
+    def kind_label
+      KIND_LABELS.fetch(entry.kind) { entry.kind.humanize }
     end
 
     def timestamp

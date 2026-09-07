@@ -100,8 +100,8 @@
       <h2 class="font-semibold">Merge</h2>
       <p class="text-xs opacity-60">Fold another contact into this one. This contact survives.</p>
       <%= form_with url: merge_contact_path(@contact), method: :post, class: "flex gap-1" do |f| %>
-        <%= f.email_field :other_email, list: "rapport-merge-addresses", placeholder: "Other contact's email", class: "input input-sm input-bordered flex-1", required: true %>
-        <datalist id="rapport-merge-addresses"><% @merge_candidates.each do |name, address| %><option value="<%= address %>"><%= name %></option><% end %></datalist>
+        <%= f.email_field :other_email, list: "rapport-addresses", placeholder: "Other contact's email", class: "input input-sm input-bordered flex-1", required: true %>
+        <datalist id="rapport-addresses"><% @address_options.each do |name, address| %><option value="<%= address %>"><%= name %></option><% end %></datalist>
         <%= f.submit "Merge", class: "btn btn-sm btn-warning", data: { turbo_confirm: "Merge into #{@contact.display_name}? This cannot be undone." } %>
       <% end %>
     <% end %>
@@ -119,12 +119,12 @@
       <%= render Ui::CardComponent.new(body_classes: "!p-4 gap-2") do %>
         <h2 class="font-semibold">Log an interaction</h2>
         <%= form_with model: [ @contact, @interaction ], class: "flex flex-col gap-2" do |f| %>
-          <div class="flex gap-2">
-            <%= f.select :kind, Rapport::Interaction::KINDS.map { |k| [ k.humanize, k ] }, {}, class: "select select-sm select-bordered" %>
-            <%= f.datetime_local_field :occurred_at, value: @interaction.occurred_at.strftime("%Y-%m-%dT%H:%M"), class: "input input-sm input-bordered" %>
+          <div class="flex flex-wrap gap-2">
+            <%= f.select :kind, Rapport::Interaction::KINDS.map { |k| [ k.humanize, k ] }, {}, class: "select select-sm w-32" %>
+            <%= f.datetime_local_field :occurred_at, value: @interaction.occurred_at.strftime("%Y-%m-%dT%H:%M"), class: "input input-sm flex-1" %>
           </div>
-          <%= f.text_area :body, rows: 2, placeholder: "What was said?", class: "textarea textarea-bordered" %>
-          <%= f.collection_select :other_contact_ids, Rapport::Contact.where.not(id: @contact.id).order(:name).limit(500), :id, :display_name, { include_hidden: false }, { class: "select select-sm select-bordered", multiple: true, size: 3, title: "Also with (hold Ctrl or Cmd to pick several)" } %>
+          <%= f.text_area :body, rows: 3, placeholder: "What was said?", class: "textarea textarea-bordered" %>
+          <%= f.text_field :other_emails, list: "rapport-addresses", placeholder: "Also with (emails, comma separated)", class: "input input-sm" %>
           <%= f.submit "Log", class: "btn btn-sm self-start" %>
         <% end %>
       <% end %>
