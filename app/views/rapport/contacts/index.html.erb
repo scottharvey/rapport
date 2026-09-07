@@ -9,7 +9,7 @@
 
 <%= form_with url: contacts_path, method: :get, class: "flex flex-wrap items-center gap-2 mb-4" do |f| %>
   <%= f.hidden_field :due, value: params[:due] if params[:due].present? %>
-  <%= f.search_field :q, value: params[:q], placeholder: "Name, email or company", class: "input input-sm w-64" %>
+  <%= f.search_field :q, value: params[:q], placeholder: "Name, email or company", class: "input input-sm w-64", **plain_field %>
   <%= f.select :stage, options_for_select([ [ "Any stage", "" ] ] + Rapport::Contact::STAGES.map { |s| [ s.humanize, s ] }, params[:stage]), {}, class: "select select-sm w-40" %>
   <%= f.select :tag, options_for_select([ [ "Any tag", "" ] ] + @tags.map { |t| [ t.name, t.name ] }, params[:tag]), {}, class: "select select-sm w-40" %>
   <%= f.submit "Filter", class: "btn btn-sm" %>

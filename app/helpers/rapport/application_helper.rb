@@ -4,6 +4,18 @@ module Rapport
       "lead" => :neutral, "signed_up" => :info, "trialing" => :warning, "subscribed" => :success, "churned" => :error
     }.freeze
 
+    # Keeps LastPass and 1Password from decorating fields that are not logins.
+    def plain_field
+      { "data-lpignore" => "true", "data-1p-ignore" => "", autocomplete: "off" }
+    end
+
+    def contact_initials(contact)
+      words = contact.name.to_s.split
+      return contact.primary_email.to_s.first(2).upcase if words.empty?
+
+      words.first(2).map { |w| w[0] }.join.upcase
+    end
+
     def stage_badge(stage)
       render Ui::BadgeComponent.new(variant: STAGE_VARIANTS.fetch(stage, :neutral), soft: true, size: :sm, text: stage.humanize)
     end

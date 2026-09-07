@@ -15,8 +15,6 @@ module Rapport
 
     def show
       @timeline_entries = @contact.timeline_entries.newest_first.limit(200)
-      @note = Note.new
-      @interaction = Interaction.new(occurred_at: Time.current)
       @tag_names = Tag.order(:name).pluck(:name)
       # [name, address] pairs for the merge and "also with" autocompletes.
       @address_options = EmailAddress.where.not(contact_id: @contact.id).includes(:contact).order(:address).limit(1000)

@@ -6,6 +6,7 @@ Rapport::Engine.routes.draw do
       post :touch
       post :merge
     end
+    resources :entries, only: :create
     resources :notes, only: :create
     resources :interactions, only: :create
     resources :taggings, only: %i[create destroy]
