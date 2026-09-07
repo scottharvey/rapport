@@ -1,0 +1,4 @@
+<% content_for :title, "Edit #{@contact.display_name}" %>
+<%= render "rapport/shared/header" %>
+<%= render Ui::IndexHeaderComponent.new(title: "Edit #{@contact.display_name}") %>
+<%= render "form", contact: @contact %>

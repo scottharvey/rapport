@@ -1,0 +1,29 @@
+<% content_for :title, "Companies" %>
+<%= render "rapport/shared/header" %>
+<%= render Ui::IndexHeaderComponent.new(title: "Companies", subtitle: "#{@pagy.count} #{'company'.pluralize(@pagy.count)}") do |header| %>
+  <% header.with_primary_action do %>
+    <%= link_to "New company", new_company_path, class: "btn btn-primary btn-sm" %>
+  <% end %>
+<% end %>
+<% if @companies.empty? %>
+  <%= render Ui::EmptyStateComponent.new(title: "No companies yet", description: "Accounts become companies on the next sweep. Add one by hand to group prospects.") %>
+<% else %>
+  <%= render Ui::CardComponent.new(body: false) do %>
+    <div class="overflow-x-auto">
+      <%= render Ui::TableComponent.new(size: :sm) do %>
+        <thead><tr><th>Name</th><th>Domain</th><th>Contacts</th><th>Account</th></tr></thead>
+        <tbody>
+          <% @companies.each do |company| %>
+            <tr>
+              <td><%= link_to company.name, company_path(company), class: "link link-hover font-medium" %></td>
+              <td><%= company.domain %></td>
+              <td><%= company.contacts.size %></td>
+              <td><%= company.account_id ? "##{company.account_id}" : "—" %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      <% end %>
+    </div>
+  <% end %>
+  <%== pagy_nav(@pagy) if @pagy.pages > 1 %>
+<% end %>

@@ -1,0 +1,5 @@
+<ol class="flex flex-col divide-y divide-base-300 max-w-2xl">
+  <% entries.each do |entry| %>
+    <%= render Rapport::TimelineEntryComponent.new(entry: entry) %>
+  <% end %>
+</ol>

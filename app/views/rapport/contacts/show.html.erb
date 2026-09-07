@@ -1,0 +1,146 @@
+<% content_for :title, @contact.display_name %>
+<%= render "rapport/shared/header" %>
+
+<%= render Ui::IndexHeaderComponent.new(title: @contact.display_name, subtitle: [ @contact.job_title, @contact.company&.name ].compact.join(" · ")) do |header| %>
+  <% header.with_meta do %>
+    <div class="flex items-center gap-2">
+      <%= stage_badge(@contact.stage) %>
+      <span class="text-xs opacity-60">via <%= @contact.source %></span>
+      <% if @contact.user_id %><span class="text-xs opacity-60">· user #<%= @contact.user_id %></span><% end %>
+    </div>
+  <% end %>
+  <% header.with_primary_action do %>
+    <%= button_to "Mark as touched", touch_contact_path(@contact), method: :post, class: "btn btn-sm btn-primary", form: { class: "inline" } %>
+  <% end %>
+  <% header.with_utility_action do %>
+    <%= link_to "Edit", edit_contact_path(@contact), class: "btn btn-sm btn-ghost" %>
+  <% end %>
+  <% header.with_utility_action do %>
+    <%= button_to "Delete", contact_path(@contact), method: :delete, class: "btn btn-sm btn-ghost text-error", form: { class: "inline", data: { turbo_confirm: "Delete this contact?" } } %>
+  <% end %>
+<% end %>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+  <div class="flex flex-col gap-4">
+    <%= render Ui::CardComponent.new(body_classes: "!p-4 gap-3") do %>
+      <h2 class="font-semibold">Details</h2>
+      <dl class="text-sm grid grid-cols-[auto_1fr] gap-x-3 gap-y-1">
+        <dt class="opacity-60">Phone</dt><dd><%= @contact.phone.presence || "—" %></dd>
+        <dt class="opacity-60">Company</dt><dd><%= @contact.company ? link_to(@contact.company.name, company_path(@contact.company), class: "link link-hover") : "—" %></dd>
+        <dt class="opacity-60">Last touch</dt><dd><%= @contact.last_touched_at ? rapport_time(@contact.last_touched_at) : "never" %></dd>
+      </dl>
+      <h3 class="text-sm font-medium mt-2">Email addresses</h3>
+      <ul class="text-sm">
+        <% @contact.email_addresses.each do |email| %>
+          <li><%= email.address %><% if email.primary? %> <%= render Ui::BadgeComponent.new(size: :xs, soft: true, text: "primary") %><% end %></li>
+        <% end %>
+      </ul>
+      <%= form_with url: contact_email_addresses_path(@contact), method: :post, class: "flex gap-1" do |f| %>
+        <%= f.email_field :address, placeholder: "Add address", class: "input input-sm input-bordered flex-1", required: true %>
+        <%= f.submit "Add", class: "btn btn-sm" %>
+      <% end %>
+    <% end %>
+
+    <%= render Ui::CardComponent.new(body_classes: "!p-4 gap-3") do %>
+      <h2 class="font-semibold">Reminder</h2>
+      <p class="text-sm">
+        <% if @contact.reminder_cadence_days %>
+          Every <%= @contact.reminder_cadence_days %> days.
+          <span class="<%= 'text-warning font-medium' if @contact.due? %>"><%= @contact.due? ? "Due now." : "Not due." %></span>
+        <% else %>
+          <span class="opacity-60">No reminder set.</span>
+        <% end %>
+      </p>
+      <%= form_with url: contact_reminder_path(@contact), method: :patch, class: "flex gap-1" do |f| %>
+        <%= f.number_field :reminder_cadence_days, value: @contact.reminder_cadence_days, min: 1, placeholder: "Days", class: "input input-sm input-bordered w-24" %>
+        <%= f.submit "Set", class: "btn btn-sm" %>
+        <% if @contact.reminder_cadence_days %>
+          <%= button_to "Clear", contact_reminder_path(@contact), method: :patch, params: { reminder_cadence_days: "" }, class: "btn btn-sm btn-ghost", form: { class: "inline" } %>
+        <% end %>
+      <% end %>
+    <% end %>
+
+    <%= render Ui::CardComponent.new(body_classes: "!p-4 gap-3") do %>
+      <h2 class="font-semibold">Tags</h2>
+      <div class="flex flex-wrap gap-1">
+        <% @contact.taggings.includes(:tag).each do |tagging| %>
+          <%= render Ui::BadgeComponent.new(size: :sm, soft: true, classes: "gap-1") do %>
+            <%= tagging.tag.name %>
+            <%= button_to "×", contact_tagging_path(@contact, tagging), method: :delete, class: "opacity-60 hover:opacity-100", form: { class: "inline" } %>
+          <% end %>
+        <% end %>
+      </div>
+      <%= form_with url: contact_taggings_path(@contact), method: :post, class: "flex gap-1" do |f| %>
+        <%= f.text_field :name, list: "rapport-tag-names", placeholder: "Add tag", class: "input input-sm input-bordered flex-1", required: true %>
+        <datalist id="rapport-tag-names"><% @tag_names.each do |name| %><option value="<%= name %>"></option><% end %></datalist>
+        <%= f.submit "Add", class: "btn btn-sm" %>
+      <% end %>
+    <% end %>
+
+    <%= render Ui::CardComponent.new(body_classes: "!p-4 gap-3") do %>
+      <h2 class="font-semibold">Custom fields</h2>
+      <% if @contact.custom_fields.any? %>
+        <dl class="text-sm grid grid-cols-[auto_1fr] gap-x-3 gap-y-1">
+          <% @contact.custom_fields.each do |key, value| %>
+            <dt class="opacity-60"><%= key %></dt>
+            <dd class="flex items-center gap-1"><%= value %>
+              <%= button_to "×", contact_custom_fields_path(@contact), method: :patch, params: { key: key, value: "" }, class: "opacity-40 hover:opacity-100", form: { class: "inline" } %>
+            </dd>
+          <% end %>
+        </dl>
+      <% end %>
+      <%= form_with url: contact_custom_fields_path(@contact), method: :patch, class: "flex gap-1" do |f| %>
+        <%= f.text_field :key, placeholder: "Field", class: "input input-sm input-bordered w-28", required: true %>
+        <%= f.text_field :value, placeholder: "Value", class: "input input-sm input-bordered flex-1", required: true %>
+        <%= f.submit "Save", class: "btn btn-sm" %>
+      <% end %>
+    <% end %>
+
+    <%= render Ui::CardComponent.new(body_classes: "!p-4 gap-3") do %>
+      <h2 class="font-semibold">Merge</h2>
+      <p class="text-xs opacity-60">Fold another contact into this one. This contact survives.</p>
+      <%= form_with url: merge_contact_path(@contact), method: :post, class: "flex gap-1" do |f| %>
+        <%= f.email_field :other_email, list: "rapport-merge-addresses", placeholder: "Other contact's email", class: "input input-sm input-bordered flex-1", required: true %>
+        <datalist id="rapport-merge-addresses"><% @merge_candidates.each do |name, address| %><option value="<%= address %>"><%= name %></option><% end %></datalist>
+        <%= f.submit "Merge", class: "btn btn-sm btn-warning", data: { turbo_confirm: "Merge into #{@contact.display_name}? This cannot be undone." } %>
+      <% end %>
+    <% end %>
+  </div>
+
+  <div class="lg:col-span-2 flex flex-col gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <%= render Ui::CardComponent.new(body_classes: "!p-4 gap-2") do %>
+        <h2 class="font-semibold">Add a note</h2>
+        <%= form_with model: [ @contact, @note ], class: "flex flex-col gap-2" do |f| %>
+          <%= f.text_area :body, rows: 3, placeholder: "What did you notice?", class: "textarea textarea-bordered", required: true %>
+          <%= f.submit "Add note", class: "btn btn-sm self-start" %>
+        <% end %>
+      <% end %>
+      <%= render Ui::CardComponent.new(body_classes: "!p-4 gap-2") do %>
+        <h2 class="font-semibold">Log an interaction</h2>
+        <%= form_with model: [ @contact, @interaction ], class: "flex flex-col gap-2" do |f| %>
+          <div class="flex gap-2">
+            <%= f.select :kind, Rapport::Interaction::KINDS.map { |k| [ k.humanize, k ] }, {}, class: "select select-sm select-bordered" %>
+            <%= f.datetime_local_field :occurred_at, value: @interaction.occurred_at.strftime("%Y-%m-%dT%H:%M"), class: "input input-sm input-bordered" %>
+          </div>
+          <%= f.text_area :body, rows: 2, placeholder: "What was said?", class: "textarea textarea-bordered" %>
+          <%= f.collection_select :other_contact_ids, Rapport::Contact.where.not(id: @contact.id).order(:name).limit(500), :id, :display_name, { include_hidden: false }, { class: "select select-sm select-bordered", multiple: true, size: 3, title: "Also with (hold Ctrl or Cmd to pick several)" } %>
+          <%= f.submit "Log", class: "btn btn-sm self-start" %>
+        <% end %>
+      <% end %>
+    </div>
+
+    <%= render Ui::CardComponent.new(body_classes: "!p-4") do %>
+      <h2 class="font-semibold mb-3">Timeline</h2>
+      <% if @timeline_entries.empty? %>
+        <%= render Ui::EmptyStateComponent.new(title: "Nothing yet", description: "Entries appear after a sweep or when you add a note.", inline: true) %>
+      <% else %>
+        <ol class="flex flex-col divide-y divide-base-300">
+          <% @timeline_entries.each do |entry| %>
+            <%= render Rapport::TimelineEntryComponent.new(entry: entry) %>
+          <% end %>
+        </ol>
+      <% end %>
+    <% end %>
+  </div>
+</div>

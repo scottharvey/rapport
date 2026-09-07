@@ -1,0 +1,21 @@
+<%= form_with model: contact, class: "flex flex-col gap-3 max-w-lg" do |f| %>
+  <%= render Ui::FormErrorsComponent.new(model: contact) %>
+  <fieldset class="fieldset"><%= f.label :name, class: "label" %><%= f.text_field :name, class: "input w-full" %></fieldset>
+  <% if contact.new_record? %>
+    <fieldset class="fieldset"><%= f.label :email, class: "label" %><%= f.email_field :email, class: "input w-full", required: true %></fieldset>
+  <% end %>
+  <fieldset class="fieldset"><%= f.label :job_title, class: "label" %><%= f.text_field :job_title, class: "input w-full" %></fieldset>
+  <fieldset class="fieldset"><%= f.label :phone, class: "label" %><%= f.telephone_field :phone, class: "input w-full" %></fieldset>
+  <fieldset class="fieldset"><%= f.label :avatar_url, "Avatar URL", class: "label" %><%= f.url_field :avatar_url, class: "input w-full" %></fieldset>
+  <fieldset class="fieldset">
+    <%= f.label :company_id, "Company", class: "label" %>
+    <%= f.collection_select :company_id, Rapport::Company.alphabetical, :id, :name, { include_blank: "None" }, class: "select w-full" %>
+  </fieldset>
+  <% if contact.user_id.nil? %>
+    <fieldset class="fieldset">
+      <%= f.label :manual_stage, "Stage (until they sign up)", class: "label" %>
+      <%= f.select :manual_stage, options_for_select(Rapport::Contact::STAGES.map { |s| [ s.humanize, s ] }, contact.manual_stage), { include_blank: "Lead (default)" }, class: "select w-full" %>
+    </fieldset>
+  <% end %>
+  <%= render Ui::FormActionsComponent.new(submit_label: contact.new_record? ? "Create contact" : "Save", cancel_url: contact.new_record? ? contacts_path : contact_path(contact)) %>
+<% end %>

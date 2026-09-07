@@ -1,0 +1,15 @@
+<li class="flex gap-3 py-3">
+  <div class="mt-0.5 shrink-0 w-7 h-7 rounded-full bg-base-200 flex items-center justify-center">
+    <%= render Ui::IconComponent.new(name: icon_name, classes: "size-4 opacity-70") %>
+  </div>
+  <div class="min-w-0 flex-1">
+    <div class="flex flex-wrap items-baseline gap-x-2">
+      <span class="font-medium text-sm"><%= entry.title %></span>
+      <span class="text-xs opacity-50"><%= entry.kind.humanize %></span>
+      <time class="text-xs opacity-50 ml-auto" datetime="<%= entry.occurred_at.iso8601 %>"><%= timestamp %></time>
+    </div>
+    <% if detail.present? %>
+      <p class="text-sm opacity-70 whitespace-pre-line break-words"><%= detail %></p>
+    <% end %>
+  </div>
+</li>

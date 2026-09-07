@@ -1,0 +1,50 @@
+<% content_for :title, @company.name %>
+<%= render "rapport/shared/header" %>
+<%= render Ui::IndexHeaderComponent.new(title: @company.name, subtitle: @company.domain) do |header| %>
+  <% header.with_utility_action do %>
+    <%= link_to "Edit", edit_company_path(@company), class: "btn btn-sm btn-ghost" %>
+  <% end %>
+  <% header.with_utility_action do %>
+    <%= button_to "Delete", company_path(@company), method: :delete, class: "btn btn-sm btn-ghost text-error", form: { class: "inline", data: { turbo_confirm: "Delete this company? Contacts are kept." } } %>
+  <% end %>
+<% end %>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+  <%= render Ui::CardComponent.new(body_classes: "!p-4 gap-2") do %>
+    <h2 class="font-semibold">Account</h2>
+    <% if @account %>
+      <p class="text-sm">Account #<%= @account.id %>: <%= @account.name %></p>
+      <% subscriptions = @company.subscriptions %>
+      <% if subscriptions.any? %>
+        <ul class="text-sm">
+          <% subscriptions.each do |s| %><li><%= s.name %> · <%= s.status %><%= " · ends #{rapport_time(s.ends_at)}" if s.ends_at %></li><% end %>
+        </ul>
+      <% else %>
+        <p class="text-sm opacity-60">No subscriptions.</p>
+      <% end %>
+    <% else %>
+      <p class="text-sm opacity-60">Not linked to an account.</p>
+    <% end %>
+  <% end %>
+
+  <div class="lg:col-span-2">
+    <%= render Ui::CardComponent.new(body: false) do %>
+      <% if @contacts.empty? %>
+        <div class="p-4"><%= render Ui::EmptyStateComponent.new(title: "No contacts", inline: true) %></div>
+      <% else %>
+        <%= render Ui::TableComponent.new(size: :sm) do %>
+          <thead><tr><th>Name</th><th>Stage</th><th>Latest entry</th></tr></thead>
+          <tbody>
+            <% @contacts.each do |contact| %>
+              <tr>
+                <td><%= link_to contact.display_name, contact_path(contact), class: "link link-hover font-medium" %><div class="text-xs opacity-60"><%= contact.primary_email %></div></td>
+                <td><%= stage_badge(contact.stage) %></td>
+                <td><%= rapport_time(contact.last_entry_at) %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        <% end %>
+      <% end %>
+    <% end %>
+  </div>
+</div>

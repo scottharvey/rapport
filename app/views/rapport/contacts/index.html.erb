@@ -1,0 +1,53 @@
+<% content_for :title, "Contacts" %>
+<%= render "rapport/shared/header" %>
+
+<%= render Ui::IndexHeaderComponent.new(title: params[:due].present? ? "Due for a touch" : "Contacts", subtitle: "#{@pagy.count} #{'contact'.pluralize(@pagy.count)}") do |header| %>
+  <% header.with_primary_action do %>
+    <%= link_to "New contact", new_contact_path, class: "btn btn-primary btn-sm" %>
+  <% end %>
+<% end %>
+
+<%= form_with url: contacts_path, method: :get, class: "flex flex-wrap items-end gap-2 mb-4" do |f| %>
+  <%= f.hidden_field :due, value: params[:due] if params[:due].present? %>
+  <%= f.search_field :q, value: params[:q], placeholder: "Name, email or company", class: "input input-sm input-bordered w-64" %>
+  <%= f.select :stage, options_for_select([ [ "Any stage", "" ] ] + Rapport::Contact::STAGES.map { |s| [ s.humanize, s ] }, params[:stage]), {}, class: "select select-sm select-bordered" %>
+  <%= f.select :tag, options_for_select([ [ "Any tag", "" ] ] + @tags.map { |t| [ t.name, t.name ] }, params[:tag]), {}, class: "select select-sm select-bordered" %>
+  <%= f.submit "Filter", class: "btn btn-sm" %>
+  <% if params[:q].present? || params[:stage].present? || params[:tag].present? %>
+    <%= link_to "Clear", contacts_path(due: params[:due].presence), class: "btn btn-sm btn-ghost" %>
+  <% end %>
+<% end %>
+
+<% if @contacts.empty? %>
+  <%= render Ui::EmptyStateComponent.new(title: "No contacts yet", description: "Run a sweep to pull in signups, or add one by hand.") %>
+<% else %>
+  <%= render Ui::CardComponent.new(body: false) do %>
+    <div class="overflow-x-auto">
+      <%= render Ui::TableComponent.new(size: :sm) do %>
+        <thead>
+          <tr><th>Name</th><th>Stage</th><th>Company</th><th>Tags</th><th>Latest entry</th><th>Touch</th></tr>
+        </thead>
+        <tbody>
+          <% @contacts.each do |contact| %>
+            <tr>
+              <td>
+                <%= link_to contact.display_name, contact_path(contact), class: "link link-hover font-medium" %>
+                <div class="text-xs opacity-60"><%= contact.primary_email %></div>
+              </td>
+              <td><%= stage_badge(contact.stage) %></td>
+              <td><%= link_to contact.company.name, company_path(contact.company), class: "link link-hover" if contact.company %></td>
+              <td class="space-x-1"><% contact.tags.each do |tag| %><%= render Ui::BadgeComponent.new(size: :sm, soft: true, text: tag.name) %><% end %></td>
+              <td><%= rapport_time(contact.last_entry_at) %></td>
+              <td>
+                <% if contact.reminder_cadence_days %>
+                  <span class="<%= 'text-warning font-medium' if contact.due? %>"><%= contact.last_touched_at ? rapport_time(contact.last_touched_at) : "never" %> · every <%= contact.reminder_cadence_days %>d</span>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      <% end %>
+    </div>
+  <% end %>
+  <%== pagy_nav(@pagy) if @pagy.pages > 1 %>
+<% end %>
