@@ -11,6 +11,9 @@ module Rapport
     has_many :interactions, through: :interaction_participants
     has_many :timeline_entries, dependent: :destroy
 
+    # The form submits "" for "Lead (default)"; treat blank as unset.
+    normalizes :manual_stage, with: ->(s) { s.presence }
+
     validates :stage, inclusion: { in: STAGES }
     validates :manual_stage, inclusion: { in: STAGES }, allow_nil: true
     validates :reminder_cadence_days, numericality: { greater_than: 0, only_integer: true }, allow_nil: true
