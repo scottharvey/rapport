@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.1.1
+
+- Fixed: Tailwind never scanned this engine's views, so any utility class not
+  already used elsewhere in the host silently compiled to nothing (its own
+  `@source` line, added for the public release, pointed at a `vendor/rapport`
+  path that only existed in the pre-extraction private repo). Ships its own
+  `app/assets/tailwind/rapport/engine.css`, picked up automatically by the
+  host's `bin/rails tailwindcss:build`/`:watch` via the tailwindcss-rails
+  gem's `tailwindcss:engines` task.
+
 ## 0.1.0
 
 First public release, extracted from the private Rails Launchpad shell.
