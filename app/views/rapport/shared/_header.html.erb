@@ -1,4 +1,4 @@
-<%= render Ui::ToolHeaderComponent.new(name: "Rapport", home_url: root_path, hub_url: (main_app.hub_path if main_app.respond_to?(:hub_path))) do |header| %>
+<%= render Ui::ToolHeaderComponent.new(name: "Rapport", home_url: root_path) do |header| %>
   <% header.with_nav do %>
     <%= link_to "Contacts", contacts_path, class: "btn btn-ghost btn-sm #{'btn-active' if controller_name == 'contacts' && params[:due].blank?}" %>
     <%= link_to contacts_path(due: 1), class: "btn btn-ghost btn-sm #{'btn-active' if params[:due].present?}" do %>
