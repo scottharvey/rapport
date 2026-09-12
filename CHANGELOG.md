@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.2
+
+- Header now renders through the host's shared Ui::ToolHeaderComponent, so
+  Rapport's chrome matches every other operator tool on /hub (Foothold,
+  Growth, Email templates) instead of its own bespoke markup
+
 ## 0.1.1
 
 - Fixed: Tailwind never scanned this engine's views, so any utility class not
